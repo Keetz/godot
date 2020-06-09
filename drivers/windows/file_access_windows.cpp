@@ -110,9 +110,12 @@ Error FileAccessWindows::_open(const String &p_path, int p_mode_flags) {
 		path = path + ".tmp";
 	}
 
-	errno_t errcode = _wfopen_s(&f, path.c_str(), mode_string);
+	f = _wfsopen(path.c_str(), mode_string, _SH_DENYWR);
 
 	if (f == nullptr) {
+		errno_t errcode;
+		_get_errno(&errcode);
+
 		switch (errcode) {
 			case ENOENT: {
 				last_error = ERR_FILE_NOT_FOUND;
